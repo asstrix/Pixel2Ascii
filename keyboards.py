@@ -1,6 +1,4 @@
-from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.fsm.context import FSMContext
 
 
 def get_options_keyboard():
