@@ -7,3 +7,11 @@ def get_options_keyboard():
     builder.button(text='ASCII Art', callback_data="ascii")
     builder.adjust(2)
     return builder.as_markup()
+
+
+def get_ascii_options():
+    builder = InlineKeyboardBuilder()
+    builder.button(text='Default', callback_data="default")
+    builder.button(text='Custom', callback_data="custom")
+    builder.adjust(2)
+    return builder.as_markup()
