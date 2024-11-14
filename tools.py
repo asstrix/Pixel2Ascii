@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 import io
 
 ASCII_CHARS = '@%#*+=-:. '
@@ -60,6 +60,14 @@ def pixelate_image(image, pixel_size):
         (image.size[0] * pixel_size, image.size[1] * pixel_size),
         Image.NEAREST
     )
+    output_stream = io.BytesIO()
+    image.save(output_stream, format="JPEG")
+    return output_stream
+
+
+def invert_colors(image):
+    image = Image.open(image)
+    image = ImageOps.invert(image)
     output_stream = io.BytesIO()
     image.save(output_stream, format="JPEG")
     return output_stream

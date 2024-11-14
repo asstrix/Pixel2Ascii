@@ -1,10 +1,10 @@
-from PIL import Image
+from PIL import Image, ImageOps
 from aiogram.filters import Command
 from aiogram import Bot, Router, types, F
 from aiogram.types import BufferedInputFile
 from cfg import API_TOKEN
 from keyboards import *
-from tools import image_to_ascii, pixelate_image
+from tools import image_to_ascii, pixelate_image, invert_colors
 from states import EventState
 from aiogram.fsm.context import FSMContext
 
@@ -23,7 +23,6 @@ async def delete_previous_messages(message: types.Message, skip=0,  amount=1):
 
 
 async def send_ascii(message: types.Message):
-    await message.answer("Converting your image to ASCII art...")
     photo_id = user_states.get(message.chat.id, {}).get('photo')
     file_info = await bot.get_file(photo_id)
     downloaded_file = await bot.download_file(file_info.file_path)
@@ -40,7 +39,7 @@ async def send_welcome(message: types.Message):
 
 @router.message(F.photo)
 async def send_welcome(message: types.Message):
-    await delete_previous_messages(message, 1, 10)
+    await delete_previous_messages(message, 1, 2)
     keyboard = get_options_keyboard()
     await message.reply("I got your photo! Please choose what you'd like to do with it.",
                         reply_markup=keyboard)
@@ -49,7 +48,7 @@ async def send_welcome(message: types.Message):
 
 @router.callback_query(lambda c: c.data == 'pixelate')
 async def pixelate_and_send(call: types.CallbackQuery):
-    await call.message.answer("Pixelating your image...")
+    await delete_previous_messages(call.message, 0, 2)
     photo_id = user_states.get(call.message.chat.id, {}).get('photo')
     file_info = await bot.get_file(photo_id)
     downloaded_file = await bot.download_file(file_info.file_path)
@@ -62,12 +61,26 @@ async def pixelate_and_send(call: types.CallbackQuery):
 
 @router.callback_query(lambda c: c.data == 'ascii')
 async def pixelate_and_send(call: types.CallbackQuery):
+    await delete_previous_messages(call.message, 0, 2)
     keyboard = get_ascii_options()
     await call.message.answer("What ascci symbols do you want to use?", reply_markup=keyboard)
 
 
+@router.callback_query(lambda c: c.data == 'invert')
+async def invert_image(call: types.CallbackQuery):
+    await delete_previous_messages(call.message, 0, 2)
+    photo_id = user_states.get(call.message.chat.id, {}).get('photo')
+    file_info = await bot.get_file(photo_id)
+    downloaded_file = await bot.download_file(file_info.file_path)
+    output_stream = invert_colors(downloaded_file)
+    output_stream.seek(0)
+    photo = BufferedInputFile(output_stream.read(), filename="inverted_image.png")
+    await call.message.answer_photo(photo=photo, caption="Here's your inverted image!")
+
+
 @router.callback_query(lambda call: True)
 async def callback_query(call: types.CallbackQuery, state: FSMContext):
+    await delete_previous_messages(call.message, 0, 1)
     if call.data == 'default':
         await send_ascii(call.message)
     elif call.data == 'custom':
