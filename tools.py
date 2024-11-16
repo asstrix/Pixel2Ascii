@@ -71,3 +71,14 @@ def invert_colors(image):
     output_stream = io.BytesIO()
     image.save(output_stream, format="JPEG")
     return output_stream
+
+
+def mirror_image(image, reflection):
+    image = Image.open(image)
+    if reflection == 'horizontal':
+        image = image.transpose(Image.FLIP_LEFT_RIGHT)
+    elif reflection == 'vertical':
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
+    output_stream = io.BytesIO()
+    image.save(output_stream, format="JPEG")
+    return output_stream

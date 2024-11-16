@@ -6,7 +6,8 @@ def get_options_keyboard():
     builder.button(text='Pixelate', callback_data='pixelate')
     builder.button(text='ASCII Art', callback_data='ascii')
     builder.button(text='Invert', callback_data='invert')
-    builder.adjust(3)
+    builder.button(text='Reflect', callback_data='reflect')
+    builder.adjust(4)
     return builder.as_markup()
 
 
@@ -14,5 +15,13 @@ def get_ascii_options():
     builder = InlineKeyboardBuilder()
     builder.button(text='Default', callback_data='default')
     builder.button(text='Custom', callback_data='custom')
+    builder.adjust(2)
+    return builder.as_markup()
+
+
+def get_reflect_options():
+    builder = InlineKeyboardBuilder()
+    builder.button(text='Horizontally', callback_data='horizontal')
+    builder.button(text='Vertically', callback_data='vertical')
     builder.adjust(2)
     return builder.as_markup()
