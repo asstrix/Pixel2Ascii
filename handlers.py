@@ -102,16 +102,6 @@ async def reflect_image(call: types.CallbackQuery):
     await call.message.answer("How do you want to reflect the image?", reply_markup=keyboard)
 
 
-# @router.callback_query(lambda c: c.data == 'horizontal')
-# async def reflect_horizontally(call: types.CallbackQuery, state: FSMContext):
-#     await send_reflected(call.message, 'horizontal', state)
-#
-#
-# @router.callback_query(lambda c: c.data == 'vertical')
-# async def reflect_horizontally(call: types.CallbackQuery, state: FSMContext):
-#     await send_reflected(call.message, 'vertical', state)
-
-
 @router.callback_query(lambda call: True)
 async def callback_query(call: types.CallbackQuery, state: FSMContext):
     if call.data == 'default':
