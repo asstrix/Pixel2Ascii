@@ -82,3 +82,11 @@ def mirror_image(image, reflection):
     output_stream = io.BytesIO()
     image.save(output_stream, format="JPEG")
     return output_stream
+
+
+def convert_to_heatmap(image):
+    image = Image.open(image).convert("L")
+    image = ImageOps.colorize(image, black='blue', white='red')
+    output_stream = io.BytesIO()
+    image.save(output_stream, format="JPEG")
+    return output_stream

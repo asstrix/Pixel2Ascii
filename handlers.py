@@ -4,7 +4,7 @@ from aiogram import Bot, Router, types, F
 from aiogram.types import BufferedInputFile
 from cfg import API_TOKEN
 from keyboards import *
-from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image
+from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap
 from states import EventState
 from aiogram.fsm.context import FSMContext
 
@@ -100,6 +100,19 @@ async def reflect_image(call: types.CallbackQuery):
     await delete_previous_messages(call.message, 0, 2)
     keyboard = get_reflect_options()
     await call.message.answer("How do you want to reflect the image?", reply_markup=keyboard)
+
+
+@router.callback_query(lambda c: c.data == 'heatmap')
+async def reflect_image(call: types.CallbackQuery, state: FSMContext):
+    await delete_previous_messages(call.message, 0, 2)
+    data = await state.get_data()
+    photo_id = data.get('photo_id')
+    file_info = await bot.get_file(photo_id)
+    downloaded_file = await bot.download_file(file_info.file_path)
+    output_stream = convert_to_heatmap(downloaded_file)
+    output_stream.seek(0)
+    photo = BufferedInputFile(output_stream.read(), filename="heatmap_image.png")
+    await call.message.answer_photo(photo=photo, caption="Here's your heatmap image!")
 
 
 @router.callback_query(lambda call: True)
