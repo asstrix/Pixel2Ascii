@@ -90,3 +90,11 @@ def convert_to_heatmap(image):
     output_stream = io.BytesIO()
     image.save(output_stream, format="JPEG")
     return output_stream
+
+
+def resize_for_sticker(image):
+    image = Image.open(image)
+    image.thumbnail((512, 512))
+    output_stream = io.BytesIO()
+    image.save(output_stream, format="JPEG")
+    return output_stream

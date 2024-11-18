@@ -8,6 +8,7 @@ def get_options_keyboard():
     builder.button(text='Invert', callback_data='invert')
     builder.button(text='Reflect', callback_data='reflect')
     builder.button(text='Heatmap', callback_data='heatmap')
+    builder.button(text='Sticker', callback_data='sticker')
     builder.adjust(1)
     return builder.as_markup()
 
