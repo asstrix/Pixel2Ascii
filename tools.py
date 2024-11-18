@@ -96,5 +96,5 @@ def resize_for_sticker(image):
     image = Image.open(image)
     image.thumbnail((512, 512))
     output_stream = io.BytesIO()
-    image.save(output_stream, format="JPEG")
+    image.save(output_stream, format="PNG")
     return output_stream
