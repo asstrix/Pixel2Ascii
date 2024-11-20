@@ -1,5 +1,6 @@
 from PIL import Image, ImageOps
-import io
+import io, requests
+from bs4 import BeautifulSoup
 
 ASCII_CHARS = '@%#*+=-:. '
 
@@ -98,3 +99,16 @@ def resize_for_sticker(image):
     output_stream = io.BytesIO()
     image.save(output_stream, format="PNG")
     return output_stream
+
+
+def get_random_joke():
+    url = "https://башорг.рф/random"
+    try:
+        response = requests.get(url)
+        response.encoding = 'utf-8'
+        soup = BeautifulSoup(response.text, 'html.parser')
+        joke = soup.find('div', class_='quote__body')
+        if joke:
+            return joke.get_text(separator='\n').strip()
+    except Exception as e:
+        return e

@@ -4,7 +4,7 @@ from aiogram import Bot, Router, types, F
 from aiogram.types import BufferedInputFile
 from cfg import API_TOKEN
 from keyboards import *
-from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker
+from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker, get_random_joke
 from states import EventState
 from aiogram.fsm.context import FSMContext
 
@@ -47,9 +47,15 @@ async def send_reflected(message: types.Message, reflection, state: FSMContext):
 
 @router.message(Command(commands=["start", 'help']))
 async def send_welcome(message: types.Message):
-    await delete_previous_messages(message,0, 30)
+    await delete_previous_messages(message, 0, 30)
     await message.answer(f"Hello {message.from_user.first_name}, welcome to Pixel2Ascii Bot!\n"
                          f"Send me an image, and I'll provide options for you!")
+
+
+@router.message(F.text == 'Random Joke')
+async def joke(message: types.Message):
+    await delete_previous_messages(message, 0, 30)
+    await message.answer(get_random_joke())
 
 
 @router.message(F.photo)
