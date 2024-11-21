@@ -4,7 +4,7 @@ from aiogram import Bot, Router, types, F
 from aiogram.types import BufferedInputFile
 from cfg import API_TOKEN
 from keyboards import *
-from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker, get_random_joke
+from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker, get_random_joke, get_random_compliment
 from states import EventState
 from aiogram.fsm.context import FSMContext
 
@@ -56,6 +56,12 @@ async def send_welcome(message: types.Message):
 async def joke(message: types.Message):
     await delete_previous_messages(message, 0, 30)
     await message.answer(get_random_joke())
+
+
+@router.message(F.text == 'Random Compliment')
+async def joke(message: types.Message):
+    await delete_previous_messages(message, 0, 30)
+    await message.answer(get_random_compliment())
 
 
 @router.message(F.photo)
