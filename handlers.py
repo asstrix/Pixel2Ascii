@@ -16,6 +16,14 @@ user_states = {}
 
 
 async def delete_previous_messages(message: types.Message, skip=0,  amount=1):
+    """
+    Deletes a specified range of previous messages in the chat.
+
+    Args:
+        message (types.Message): The current message object.
+        skip (int): The number of messages to skip.
+        amount (int): Total number of messages to delete (including skipped ones).
+    """
     try:
         for i in range(message.message_id - skip, message.message_id - amount, -1):
             await bot.delete_message(message.chat.id, i)
@@ -24,6 +32,14 @@ async def delete_previous_messages(message: types.Message, skip=0,  amount=1):
 
 
 async def send_ascii(message: types.Message, ascii_set, state: FSMContext):
+    """
+    Converts the user's uploaded image to ASCII art using a specified set of ASCII symbols.
+
+    Args:
+        message (types.Message): The current message object.
+        ascii_set (str): A string of ASCII characters to use for the conversion.
+        state (FSMContext): Finite State Machine context to retrieve photo data.
+    """
     await delete_previous_messages(message, 0, 2)
     data = await state.get_data()
     photo_id = data.get('photo_id')
@@ -35,6 +51,14 @@ async def send_ascii(message: types.Message, ascii_set, state: FSMContext):
 
 
 async def send_reflected(message: types.Message, reflection, state: FSMContext):
+    """
+    Reflects the user's uploaded image either horizontally or vertically.
+
+    Args:
+        message (types.Message): The current message object.
+        reflection (str): Either 'horizontal' or 'vertical', indicating the reflection type.
+        state (FSMContext): Finite State Machine context to retrieve photo data.
+    """
     await delete_previous_messages(message, 0, 2)
     data = await state.get_data()
     photo_id = data.get('photo_id')
@@ -46,13 +70,14 @@ async def send_reflected(message: types.Message, reflection, state: FSMContext):
     await message.answer_photo(photo=photo, caption=f"Here's your {reflection}ly reflected image!")
 
 
-@router.message(F.sticker)
-async def get_sticker_id(message: types.Message):
-    await message.answer(f"file_id стикера: {message.sticker.file_id}")
-
-
 @router.message(Command(commands=["start", 'help']))
 async def send_welcome(message: types.Message):
+    """
+   Handles /start and /help commands to welcome the user.
+
+   Args:
+       message (types.Message): The current message object.
+   """
     await delete_previous_messages(message, 0, 30)
     await message.answer(f"Hello {message.from_user.first_name}, welcome to Pixel2Ascii Bot!\n"
                          f"Send me an image, and I'll provide options for you!")
@@ -87,6 +112,13 @@ async def send_welcome(message: types.Message, state: FSMContext):
 
 @router.callback_query(lambda c: c.data == 'pixelate')
 async def pixelate_and_send(call: types.CallbackQuery, state: FSMContext):
+    """
+    Applies pixelation to the user's uploaded image and sends it back.
+
+    Args:
+        call (types.CallbackQuery): The callback query triggered by the user's button press.
+        state (FSMContext): Finite State Machine context to retrieve photo data.
+    """
     await delete_previous_messages(call.message, 0, 2)
     data = await state.get_data()
     photo_id = data.get('photo_id')
@@ -108,6 +140,13 @@ async def pixelate_and_send(call: types.CallbackQuery):
 
 @router.callback_query(lambda c: c.data == 'invert')
 async def invert_image(call: types.CallbackQuery, state: FSMContext):
+    """
+    Inverts the colors of the user's uploaded image and sends it back.
+
+    Args:
+        call (types.CallbackQuery): The callback query triggered by the user's button press.
+        state (FSMContext): Finite State Machine context to retrieve photo data.
+    """
     await delete_previous_messages(call.message, 0, 2)
     data = await state.get_data()
     photo_id = data.get('photo_id')
@@ -121,6 +160,12 @@ async def invert_image(call: types.CallbackQuery, state: FSMContext):
 
 @router.callback_query(lambda c: c.data == 'reflect')
 async def reflect_image(call: types.CallbackQuery):
+    """
+    Prompts the user to select the type of reflection (horizontal or vertical).
+
+    Args:
+        call (types.CallbackQuery): The callback query triggered by the user's button press.
+    """
     await delete_previous_messages(call.message, 0, 2)
     keyboard = get_reflect_options()
     await call.message.answer("How do you want to reflect the image?", reply_markup=keyboard)
@@ -128,6 +173,19 @@ async def reflect_image(call: types.CallbackQuery):
 
 @router.callback_query(lambda c: c.data == 'heatmap')
 async def reflect_image(call: types.CallbackQuery, state: FSMContext):
+    """
+    Converts the user's uploaded image into a heatmap and sends it back.
+
+    Args:
+        call (types.CallbackQuery): The callback query triggered by the user's button press.
+        state (FSMContext): Finite State Machine context to retrieve photo data.
+
+    Workflow:
+        1. Retrieves the user's uploaded image ID from the state.
+        2. Downloads the image from Telegram servers.
+        3. Applies a heatmap transformation to the image.
+        4. Sends the transformed image back to the user.
+    """
     await delete_previous_messages(call.message, 0, 2)
     data = await state.get_data()
     photo_id = data.get('photo_id')
