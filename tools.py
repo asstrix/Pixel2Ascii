@@ -146,3 +146,7 @@ def get_random_joke():
 
 def get_random_compliment():
     return random.choice(COMPLIMENTS)
+
+
+def coin_toss():
+    return random.choice(['Орёл', 'Решка'])

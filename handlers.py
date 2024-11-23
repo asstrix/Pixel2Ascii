@@ -4,7 +4,8 @@ from aiogram import Bot, Router, types, F
 from aiogram.types import BufferedInputFile
 from cfg import API_TOKEN
 from keyboards import *
-from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker, get_random_joke, get_random_compliment
+# from tools import image_to_ascii, pixelate_image, invert_colors, mirror_image, convert_to_heatmap, resize_for_sticker, get_random_joke, get_random_compliment, coin_toss
+from tools import *
 from states import EventState
 from aiogram.fsm.context import FSMContext
 
@@ -45,6 +46,11 @@ async def send_reflected(message: types.Message, reflection, state: FSMContext):
     await message.answer_photo(photo=photo, caption=f"Here's your {reflection}ly reflected image!")
 
 
+@router.message(F.sticker)
+async def get_sticker_id(message: types.Message):
+    await message.answer(f"file_id стикера: {message.sticker.file_id}")
+
+
 @router.message(Command(commands=["start", 'help']))
 async def send_welcome(message: types.Message):
     await delete_previous_messages(message, 0, 30)
@@ -62,6 +68,12 @@ async def joke(message: types.Message):
 async def joke(message: types.Message):
     await delete_previous_messages(message, 0, 30)
     await message.answer(get_random_compliment())
+
+
+@router.message(F.text == 'Toss a coin')
+async def toss_a_coin(message: types.Message):
+    await delete_previous_messages(message, 0, 30)
+    await message.answer(f'{coin_toss()}')
 
 
 @router.message(F.photo)
